@@ -20,6 +20,8 @@ class User:
         self.session_token = session_token
         self.direct_connection = direct_connection
 
-    def fetch_local(self) -> dict | None:
-        self.credentials: dict | None = json.load(open("./resources/credentials.json")) if Path("./resources/credentials.json").is_file() else None
-        return self.credentials
+    def fetch_local(self):
+        user_data: dict | None = json.load(open("./resources/user_data.json")) if Path("./resources/user_data.json").is_file() else None
+        self.asterisk: str | None = user_data.get("asterisk")
+        self.username: str | None = user_data.get("username")
+        self.direct_connection: str | None = user_data.get("direct_connection")
