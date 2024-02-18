@@ -1,8 +1,6 @@
-import os
 import json
 
 from typing import Optional
-from aiohttp import ClientSession
 from pathlib import Path
 
 from functions.keys import ECC
