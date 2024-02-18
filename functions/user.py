@@ -10,11 +10,15 @@ from functions.keys import ECC
 class User:
     def __init__(
             self,
-            user_credentials: Optional[dict],
-            session_token: Optional[str]
+            asterisk: str,
+            username: str,
+            session_token: Optional[str],
+            direct_connection: Optional[bool] = False
         ):
-        self.credentials = user_credentials
+        self.asterisk = asterisk
+        self.username = username
         self.session_token = session_token
+        self.direct_connection = direct_connection
 
     def fetch_local(self) -> dict | None:
         self.credentials: dict | None = json.load(open("./resources/credentials.json")) if Path("./resources/credentials.json").is_file() else None
