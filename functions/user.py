@@ -3,8 +3,6 @@ import json
 from typing import Optional
 from pathlib import Path
 
-from functions.keys import ECC
-
 class User:
 	def __init__(
 			self,
@@ -23,3 +21,15 @@ class User:
 		self.asterisk: str | None = user_data.get("asterisk")
 		self.username: str | None = user_data.get("username")
 		self.direct_connection: str | None = user_data.get("direct_connection")
+
+	def offload_json(self) -> None:
+		json.dump(
+			{
+				"asterisk": self.asterisk,
+				"username": self.username,
+				"direct_connection": self.direct_connection
+			},
+			open("./resources/user_data.json", "w", encoding = "utf-8"),
+			ensure_ascii = False,
+			indent = 4
+		)
