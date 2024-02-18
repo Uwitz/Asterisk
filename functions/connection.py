@@ -23,3 +23,27 @@ class Session:
     async def authenticate(self, auth_server: Optional[str]) -> str:
         ...
 
+    async def create_user(self, username: str, auth_server: Optional[str]) -> str:
+        public_key = ECC().generate_keypair()
+
+        json.dump(self.server_conf, "./resources/server_conf.json") if Path("./resources/server_conf.json") else None
+
+        async with ClientSession() as session:
+            async with session.request(
+                method = "POST",
+                url = auth_server,
+                json = {
+                    "username": username,
+                    "public_key": public_key,
+                    "server_conf": self.server_conf
+                }
+            ) as response:
+                if response.status in (200, 201):
+                    response_json = response.json()
+                    self.user = User(
+                        {
+                            "username": response_json.get("username")
+                        },
+                        response_json.get("session_token")
+                    )
+                    return response_json.get("session_token")
