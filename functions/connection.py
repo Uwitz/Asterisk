@@ -2,7 +2,6 @@ import json
 
 from functions.keys import ECC
 from functions.user import User
-from functions.objects import SessionToken
 
 from pathlib import Path
 from typing import Dict, Optional, Union
@@ -23,7 +22,7 @@ class Session:
     async def authenticate(self, auth_server: Optional[str]) -> str:
         ...
 
-    async def create_user(self, username: str, auth_server: Optional[str]) -> str:
+    async def create_user(self, asterisk: str, username: str, auth_server: Optional[str], direct_connection: Optional[bool] = False) -> str:
         public_key = ECC().generate_keypair()
 
         json.dump(self.server_conf, "./resources/server_conf.json") if Path("./resources/server_conf.json") else None
@@ -41,9 +40,9 @@ class Session:
                 if response.status in (200, 201):
                     response_json = response.json()
                     self.user = User(
-                        {
-                            "username": response_json.get("username")
-                        },
-                        response_json.get("session_token")
+                        username = username,
+                        asterisk = asterisk,
+                        session_token = response_json.get("session_token"),
+                        direct_connection = direct_connection
                     )
                     return response_json.get("session_token")
