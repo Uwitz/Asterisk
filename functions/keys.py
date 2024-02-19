@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from functions.objects import RequestSignature
 
@@ -36,14 +36,6 @@ class ECC:
 		)
 		return public_key_bytes
 
-	def sign(self, data: str) -> RequestSignature:
-		timestamp: str = datetime.now().isoformat()
-		private_key = ec.derive_private_key(
-			int.from_bytes(self.private_key, 'big'),
-			ec.SECP521R1(),
-			default_backend()
-		)
-		signer = private_key.signer(ec.ECDSA(hashes.SHA256()))
 class ECDSA:
 	def __init__(self, signing_key: Optional[SigningKey]):
 		self.signing_key = signing_key
@@ -53,19 +45,20 @@ class ECDSA:
 		open("./resources/signing_key.pem", "wb").write(self.signing_key.to_pem()) if store else None
 		return self.signing_key.verifying_key
 
+	def sign(self, data) -> RequestSignature:
+		signature = self.signing_key.sign(bytes(f"{data}", encoding = "utf-8"))
 
 		return RequestSignature(
 			headers = {
-				"X-Signature-Timestamp": timestamp,
-				"X-Signature-Ed25519": signer.update(f'{timestamp}{data}'.encode()).finalize()
+				"X-Signature-ECDSA": signature
 			},
-			data = data
+			data = bytes(f"{data}", encoding = "utf-8")
 		)
 
 	@staticmethod
-	async def verify(public_key: bytes, data: str, signature: str, timestamp: str) -> bool:
+	async def verify(verifying_key: bytes, signature: RequestSignature) -> bool:
 		try:
-			VerifyKey(public_key).verify(f'{timestamp}{data}'.encode(), bytes.fromhex(signature))
+			verifying_key.verify(signature.headers.get("X-Signature-ECDSA"), bytes(f"{signature.data}", encoding = "utf-8"))
 			return True
-		except BadSignatureError:
+		except:
 			return False
