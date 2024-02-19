@@ -8,12 +8,10 @@ class User:
 			self,
 			asterisk: str,
 			username: str,
-			session_token: Optional[str],
 			direct_connection: Optional[bool] = False
 		):
 		self.asterisk = asterisk
 		self.username = username
-		self.session_token = session_token
 		self.direct_connection = direct_connection
 
 	def fetch_local(self):
