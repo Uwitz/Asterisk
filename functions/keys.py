@@ -2,8 +2,6 @@ from typing import Any, Optional
 
 from functions.objects import RequestSignature
 
-from nacl.signing import VerifyKey
-from nacl.exceptions import BadSignatureError
 from ecdsa import SECP256k1, SigningKey, VerifyingKey
 
 from cryptography.hazmat.backends import default_backend
