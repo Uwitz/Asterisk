@@ -25,6 +25,7 @@ class ECC:
 			format = serialization.PrivateFormat.PKCS8,
 			encryption_algorithm = serialization.NoEncryption()
 		)
+		self.private_key = private_key_bytes
 		open("./resources/private_key.pem", "wb").write(private_key_bytes) if store else None
 
 		public_key = private_key.public_key()
