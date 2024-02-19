@@ -2,6 +2,9 @@ from typing import Optional
 
 from functions.objects import RequestSignature
 
+from nacl.signing import VerifyKey
+from nacl.exceptions import BadSignatureError
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -51,3 +54,11 @@ class ECC:
 			},
 			data = data
 		)
+
+	@staticmethod
+	async def verify(public_key: bytes, data: str, signature: str, timestamp: str) -> bool:
+		try:
+			VerifyKey(public_key).verify(f'{timestamp}{data}'.encode(), bytes.fromhex(signature))
+			return True
+		except BadSignatureError:
+			return False
