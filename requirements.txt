@@ -1,4 +1,4 @@
-PyNaCl
 cryptography
 fastapi
 uvicorn
+ecdsa
