@@ -4,6 +4,7 @@ from functions.objects import RequestSignature
 
 from nacl.signing import VerifyKey
 from nacl.exceptions import BadSignatureError
+from ecdsa import SECP256k1, SigningKey, VerifyingKey
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
@@ -33,7 +34,6 @@ class ECC:
 			encoding = serialization.Encoding.PEM,
 			format = serialization.PublicFormat.SubjectPublicKeyInfo
 		)
-
 		return public_key_bytes
 
 	def sign(self, data: str) -> RequestSignature:
@@ -44,6 +44,15 @@ class ECC:
 			default_backend()
 		)
 		signer = private_key.signer(ec.ECDSA(hashes.SHA256()))
+class ECDSA:
+	def __init__(self, signing_key: Optional[SigningKey]):
+		self.signing_key = signing_key
+
+	def generate_keypair(self, store: Optional[bool] = False):
+		self.signing_key = SigningKey.generate(curve = SECP256k1)
+		open("./resources/signing_key.pem", "wb").write(self.signing_key.to_pem()) if store else None
+		return self.signing_key.verifying_key
+
 
 		return RequestSignature(
 			headers = {
