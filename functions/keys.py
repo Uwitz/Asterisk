@@ -15,22 +15,19 @@ class ECC:
 	def __init__(self, private_key: Optional[bytes]):
 		self.private_key = private_key
 
-	def generate_keypair() -> bytes:
+	def generate_keypair(self, store: Optional[bool] = False) -> bytes:
 		private_key = ec.generate_private_key(
 			ec.SECP521R1(),
 			default_backend()
 		)
-
 		private_key_bytes = private_key.private_bytes(
 			encoding = serialization.Encoding.PEM,
 			format = serialization.PrivateFormat.PKCS8,
 			encryption_algorithm = serialization.NoEncryption()
 		)
-
-		open("./resources/private_key.pem", "wb").write(private_key_bytes)
+		open("./resources/private_key.pem", "wb").write(private_key_bytes) if store else None
 
 		public_key = private_key.public_key()
-
 		public_key_bytes = public_key.public_bytes(
 			encoding = serialization.Encoding.PEM,
 			format = serialization.PublicFormat.SubjectPublicKeyInfo
