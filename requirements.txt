@@ -1,2 +1,4 @@
+nacl
+cryptography
 fastapi
 uvicorn
