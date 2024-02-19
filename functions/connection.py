@@ -18,8 +18,12 @@ class Session:
 		}
 		json.dump(self.server_conf, open("./resources/server_conf.json", "w")) if self.server_conf != json.load(open("./resources/server_conf.json", "r")) else None
 
-	async def authenticate(self, auth_server: Optional[str]) -> str:
-		...
+	async def send_message(self, asterisk: str, message: str):
+		async with ClientSession() as session:
+			async with session.request(
+				"POST",
+				body = json.dumps()
+			)
 
 	async def create_user(self, asterisk: str, username: str, auth_server: Optional[str], direct_connection: Optional[bool] = False) -> str:
 		public_key = ECC().generate_keypair()
@@ -32,7 +36,7 @@ class Session:
 				url = auth_server,
 				json = {
 					"username": username,
-					"public_key": public_key,
+					"public_key": public_key.encode("utf-8"),
 					"server_conf": self.server_conf
 				}
 			) as response:
