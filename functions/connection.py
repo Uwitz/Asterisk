@@ -8,10 +8,9 @@ from typing import Dict, Optional, Union
 from aiohttp import ClientSession
 
 class Session:
-	def __init__(self, token: Optional[str], server_conf: Optional[Dict[Union[int, str], str]]):
-		self.token = token
+	def __init__(self, server_conf: Optional[Dict[Union[int, str], str]]):
 		self.server_conf = server_conf or json.load(open("./resources/server_conf.json", "r")) or {
-			"auth": "auth.snys.snyco.uk",
+			"auth_server": "auth.snys.snyco.uk",
 			1: "1.snys.snyco.uk",
 			2: "2.snys.snyco.uk",
 			3: "3.snys.snyco.uk",
