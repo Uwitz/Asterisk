@@ -44,19 +44,21 @@ class ECDSA:
 		return self.signing_key.verifying_key
 
 	def sign(self, data) -> RequestSignature:
-		signature = self.signing_key.sign(bytes(f"{data}", encoding = "utf-8"))
+		timestamp = datetime.now().isoformat()
+		signature = self.signing_key.sign(bytes(f"{timestamp}{data}", encoding = "utf-8"))
 
 		return RequestSignature(
 			headers = {
-				"X-Signature-ECDSA": signature
+				"X-Signature-ECDSA": signature,
+				"X-Signature-Timestamp": timestamp
 			},
-			data = bytes(f"{data}", encoding = "utf-8")
+			data = bytes(f"{timestamp}{data}", encoding = "utf-8")
 		)
 
 	@staticmethod
 	async def verify(verifying_key: bytes, signature: RequestSignature) -> bool:
 		try:
-			verifying_key.verify(signature.headers.get("X-Signature-ECDSA"), bytes(f"{signature.data}", encoding = "utf-8"))
+			verifying_key.verify(signature.headers.get("X-Signature-ECDSA"), bytes(f"{signature.headers.get("X-Signature-Timestamp")}{signature.data}", encoding = "utf-8"))
 			return True
 		except:
 			return False
