@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from functions.objects import RequestSignature
 
-from ecdsa import SECP256k1, SigningKey, VerifyingKey
+from ecdsa import Ed25519, SigningKey, VerifyingKey
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
@@ -36,10 +36,14 @@ class ECC:
 
 class ECDSA:
 	def __init__(self, signing_key: Optional[SigningKey]):
+		public_key
+
+class Ed25519:
+	def __init__(self, signing_key: Optional[SigningKey] = None):
 		self.signing_key = signing_key
 
 	def generate_keypair(self, store: Optional[bool] = False):
-		self.signing_key = SigningKey.generate(curve = SECP256k1)
+		self.signing_key = SigningKey.generate(curve = Ed25519)
 		open("./resources/signing_key.pem", "wb").write(self.signing_key.to_pem()) if store else None
 		return self.signing_key.verifying_key
 
@@ -49,7 +53,7 @@ class ECDSA:
 
 		return RequestSignature(
 			headers = {
-				"X-Signature-ECDSA": signature,
+				"X-Signature-Ed25519": signature,
 				"X-Signature-Timestamp": timestamp
 			},
 			data = bytes(f"{timestamp}{data}", encoding = "utf-8")
@@ -58,7 +62,7 @@ class ECDSA:
 	@staticmethod
 	async def verify(verifying_key: bytes, signature: RequestSignature) -> bool:
 		try:
-			verifying_key.verify(signature.headers.get("X-Signature-ECDSA"), bytes(f"{signature.headers.get("X-Signature-Timestamp")}{signature.data}", encoding = "utf-8"))
+			verifying_key.verify(signature.headers.get("X-Signature-Ed25519"), bytes(f"{signature.headers.get("X-Signature-Timestamp")}{signature.data}", encoding = "utf-8"))
 			return True
 		except:
 			return False
